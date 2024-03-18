@@ -1,8 +1,9 @@
 import pandas as pd
 import numpy as np
 from datetime import datetime
+import os
 
-def infer_and_convert_data_types(df):
+def infer_and_convert_data_types():
     """
     Infer and convert data types for each column in the DataFrame.
 
@@ -18,6 +19,14 @@ def infer_and_convert_data_types(df):
     it applies the inferred types to the DataFrame using the astype() method.
 
     """
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    csv_file_path = os.path.join(current_directory, '../../sample_data.csv')
+
+    df = pd.read_csv(csv_file_path, nrows=1000)
+    print("Data types before inference:")
+    print(df.dtypes)
+    
+    
     for col in df.columns:
         # Handle null elements
         df[col] = df[col].replace({'Not available': np.nan, 'null': np.nan})  # Replace 'Not available' and 'null' with NaN
@@ -60,14 +69,8 @@ def infer_and_convert_data_types(df):
         if len(df[col].dropna().unique()) / len(df[col]) < 0.5:  # Example threshold for categorization
             df[col] = df[col].astype('category')
 
-    return df
 
-# Test the function with your DataFrame
-df = pd.read_csv('../../sample_data.csv', nrows=1000)
-print("Data types before inference:")
-print(df.dtypes)
-
-df = infer_and_convert_data_types(df)
-
-print("\nData types after inference:")
-print(df.dtypes)
+    print("\nData types after inference:")
+    print(df.dtypes)
+    csv_data = df.to_json(orient='records')
+    return csv_data
